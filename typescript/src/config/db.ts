@@ -3,9 +3,9 @@ import { connect } from "mongoose";
 const connectdb = async (): Promise<void> => {
   try {
     await connect(process.env.MONGO_URI as string);
-    console.log("Mongoosdb are conected successfully");
+    console.log("✅ Mongoosdb are conected successfully");
   } catch (error) {
-    console.error("mongoose are not connected", error);
+    console.error("❌ mongoose are not connected : ", error);
     process.exit(1);
   }
 };
