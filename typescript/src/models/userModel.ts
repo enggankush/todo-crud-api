@@ -1,26 +1,6 @@
-// import { model, Schema } from "mongoose";
+import { Schema, model, InferSchemaType } from "mongoose";
 
-// const userSchema = new Schema({
-//   name: { type: String, require: true },
-//   dob: { type: String, require: true },
-//   mobile: { type: Number, require: true },
-//   email: { type: String, require: true, unique: true },
-//   password: { type: String, require: true },
-// });
-
-// export default model("user", userSchema);
-
-import { Document, Schema, model } from "mongoose";
-
-export interface IUser extends Document {
-  name: string;
-  dob: string;
-  mobile: string;
-  email: string;
-  password: string;
-}
-
-const userSchema = new Schema<IUser>({
+const userSchema = new Schema({
   name: { type: String, required: true },
   dob: { type: String, required: true },
   mobile: { type: String, required: true },
@@ -28,4 +8,7 @@ const userSchema = new Schema<IUser>({
   password: { type: String, required: true },
 });
 
-export default model<IUser>("User", userSchema);
+type IUser = InferSchemaType<typeof userSchema>;
+
+const userModel = model<IUser>("User", userSchema);
+export default userModel;
