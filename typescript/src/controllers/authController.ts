@@ -147,3 +147,28 @@ export const userUpdate = async (
     res.status(500).json("Something went worng");
   }
 };
+
+export const userDelete = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId = req.params.id;
+    const deleteUser = await userModel.findByIdAndDelete(userId);
+    if (!deleteUser) {
+      res.status(400).json({
+        success: false,
+        msg: "User not found",
+      });
+    }
+    res.status(200).json({
+      sucess: true,
+      msg: "User Id Delete successfuly",
+    });
+  } catch (err) {
+    res.status(500).json({
+      sucess: false,
+      msg: "Error is delete user api",
+    });
+  }
+};
