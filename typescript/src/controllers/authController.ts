@@ -2,10 +2,7 @@ import { Request, Response } from "express";
 import userModel from "../models/userModel";
 import { compare, hash } from "bcryptjs";
 
-export const userRegister = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const userRegister = async (req: Request, res: Response) => {
   try {
     const {
       name,
@@ -22,15 +19,13 @@ export const userRegister = async (
       password: string;
       confirm_password: string;
     } = req.body;
-
     //check if user exists
     let existingUser = await userModel.findOne({ email });
     if (existingUser) {
-      res.status(409).json({
+      return res.status(409).json({
         success: false,
         msg: "User already exists",
       });
-      return;
     }
 
     const hashedPassword = await hash(password, 10);
@@ -62,12 +57,12 @@ export const userRegister = async (
   }
 };
 
-export const userLogin = async (req: Request, res: Response): Promise<void> => {
+export const userLogin = async (req: Request, res: Response) => {
   try {
     const { email, password }: { email: string; password: string } = req.body;
     let user = await userModel.findOne({ email });
     if (!user) {
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         mgs: "Email not found.  Please Register...",
       });
@@ -76,11 +71,10 @@ export const userLogin = async (req: Request, res: Response): Promise<void> => {
 
     const isPasswordValid = await compare(String(password), user.password);
     if (!isPasswordValid) {
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         msg: "Incorrect password",
       });
-      return;
     }
     res.status(200).json({
       success: true,
@@ -99,26 +93,22 @@ export const userLogin = async (req: Request, res: Response): Promise<void> => {
   }
 };
 
-export const userUpdate = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const userUpdate = async (req: Request, res: Response) => {
   try {
-    const userId = req.params.id;
-    const {
-      name,
-      dob,
-      mobile,
-    }: {
-      name: string;
-      dob: string;
-      mobile: number;
-    } = req.body;
+    type reqType = {
+      name: string | null;
+      dob: string | null;
+      mobile: number | null;
+    };
 
-    const updateData: { name?: string; dob?: string; mobile?: number } = {};
-    if (name) updateData.name = name;
-    if (dob) updateData.dob = dob;
-    if (mobile) updateData.mobile = mobile;
+    const userId = req.params.id;
+    const payload = req.body as reqType;
+
+    const updateData: reqType = {
+      name: payload?.name ?? null,
+      dob: payload?.dob ?? null,
+      mobile: payload?.mobile ?? null,
+    };
 
     const updateUser = await userModel.findByIdAndUpdate(
       userId,
@@ -127,7 +117,7 @@ export const userUpdate = async (
     );
 
     if (!updateUser) {
-      res.status(404).json({
+      return res.status(404).json({
         success: false,
         msg: "No record found",
       });
@@ -136,11 +126,7 @@ export const userUpdate = async (
     res.status(200).json({
       sucess: true,
       msg: "User updated successfully",
-      user: {
-        name,
-        dob,
-        mobile,
-      },
+      user: updateData,
     });
   } catch (err) {
     console.error("Update :", err);
@@ -148,15 +134,12 @@ export const userUpdate = async (
   }
 };
 
-export const userDelete = async (
-  req: Request,
-  res: Response
-): Promise<void> => {
+export const userDelete = async (req: Request, res: Response) => {
   try {
     const userId = req.params.id;
     const deleteUser = await userModel.findByIdAndDelete(userId);
     if (!deleteUser) {
-      res.status(400).json({
+      return res.status(400).json({
         success: false,
         msg: "User not found",
       });

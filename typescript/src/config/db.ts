@@ -6,7 +6,6 @@ const connectdb = async (): Promise<void> => {
     console.log("✅ Mongoosdb are conected successfully");
   } catch (error) {
     console.error("❌ mongoose are not connected : ", error);
-    process.exit(1);
   }
 };
 

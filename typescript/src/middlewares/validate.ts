@@ -11,14 +11,13 @@ export const validate = (validators: ValidationChain[]): RequestHandler => {
     for (let validator of validators) {
       await validator.run(req);
     }
-
     // Collect validation results
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       res.status(400).json({
         success: false,
         errors: errors.array().map((err) => ({
-          field: "param" in err ? err.param : "unknown",
+          field: "path" in err ? err.path : "unknown",
           message: err.msg,
         })),
       });
