@@ -4,7 +4,7 @@ export const validate = (validators) => {
   return async (req, res, next) => {
     // Run all validators
     for (let validator of validators) {
-        // console.log(validator)
+      console.log("validate = ", validator);
       await validator.run(req);
     }
 
@@ -13,7 +13,7 @@ export const validate = (validators) => {
     if (!errors.isEmpty()) {
       return res.status(400).json({
         success: false,
-        errors: errors.array().map(err => ({
+        errors: errors.array().map((err) => ({
           field: err.param,
           message: err.msg,
         })),

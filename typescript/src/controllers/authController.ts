@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import userModel from "../models/userModel";
-import { hash } from "bcryptjs";
+import { compare, hash } from "bcryptjs";
 
 export const userRegister = async (
   req: Request,
@@ -57,7 +57,44 @@ export const userRegister = async (
       },
     });
   } catch (err) {
-    console.error("register :",err);
+    console.error("Register :", err);
     res.status(400).json("Something worng");
+  }
+};
+
+export const userLogin = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { email, password }: { email: string; password: string } = req.body;
+    let user = await userModel.findOne({ email });
+    if (!user) {
+      res.status(400).json({
+        success: false,
+        mgs: "Email not found.  Please Register...",
+      });
+      return;
+    }
+
+    const isPasswordValid = await compare(String(password), user.password);
+    if (!isPasswordValid) {
+      res.status(400).json({
+        success: false,
+        msg: "Incorrect password",
+      });
+      return;
+    }
+    res.status(200).json({
+        success: true,
+        msg:"Login Successful",
+        user:{
+            id: user._id,
+            name: user.name,
+            dob: user.dob,
+            mobile: user.mobile,
+            email: user.email,
+        }
+    })
+  } catch (err) {
+    console.error("Login :", err);
+    res.status(400).json("Something login error");
   }
 };
