@@ -83,18 +83,67 @@ export const userLogin = async (req: Request, res: Response): Promise<void> => {
       return;
     }
     res.status(200).json({
-        success: true,
-        msg:"Login Successful",
-        user:{
-            id: user._id,
-            name: user.name,
-            dob: user.dob,
-            mobile: user.mobile,
-            email: user.email,
-        }
-    })
+      success: true,
+      msg: "Login Successful",
+      user: {
+        id: user._id,
+        name: user.name,
+        dob: user.dob,
+        mobile: user.mobile,
+        email: user.email,
+      },
+    });
   } catch (err) {
     console.error("Login :", err);
     res.status(400).json("Something login error");
+  }
+};
+
+export const userUpdate = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const userId = req.params.id;
+    const {
+      name,
+      dob,
+      mobile,
+    }: {
+      name: string;
+      dob: string;
+      mobile: number;
+    } = req.body;
+
+    const updateData: { name?: string; dob?: string; mobile?: number } = {};
+    if (name) updateData.name = name;
+    if (dob) updateData.dob = dob;
+    if (mobile) updateData.mobile = mobile;
+
+    const updateUser = await userModel.findByIdAndUpdate(
+      userId,
+      { $set: updateData },
+      { new: true }
+    );
+
+    if (!updateUser) {
+      res.status(404).json({
+        success: false,
+        msg: "No record found",
+      });
+    }
+
+    res.status(200).json({
+      sucess: true,
+      msg: "User updated successfully",
+      user: {
+        name,
+        dob,
+        mobile,
+      },
+    });
+  } catch (err) {
+    console.error("Update :", err);
+    res.status(500).json("Something went worng");
   }
 };

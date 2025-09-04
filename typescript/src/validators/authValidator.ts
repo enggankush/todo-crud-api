@@ -49,3 +49,18 @@ export const loginValidation = [
 
   body("password").notEmpty().withMessage("Password is required"),
 ];
+
+export const updatedValidation = [
+  body("name").optional().trim().notEmpty().withMessage("Name is Required"),
+  body("dob")
+    .optional()
+    .matches(/^(0[1-9]|[12][0-9]|3[01])[\/](0[1-9]|1[0-2])[\/](19|20)\d\d$/)
+    .withMessage("Invalid Date of Birth (format: dd/mm/yyyy)"),
+
+  body("mobile")
+    .optional()
+    .isMobilePhone("en-IN")
+    .withMessage("Invalid mobile number")
+    .isLength({ min: 10, max: 10 })
+    .withMessage("Mobile number must be 10 digits"),
+];
