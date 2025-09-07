@@ -8,7 +8,7 @@ const userSchema = new Schema({
   password: { type: String, required: true },
 });
 
-type IUser = InferSchemaType<typeof userSchema>;
+export type IUser = InferSchemaType<typeof userSchema> & { _id: string };
 
 const userModel = model<IUser>("User", userSchema);
 export default userModel;

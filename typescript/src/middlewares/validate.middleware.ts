@@ -1,7 +1,7 @@
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import { ValidationChain, validationResult } from "express-validator";
 
-export const validate = (validators: ValidationChain[]): RequestHandler => {
+export const ValidateMiddleware = (validators: ValidationChain[]): RequestHandler => {
   return async (
     req: Request,
     res: Response,

@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
-import userModel from "../models/userModel";
+import userModel, { IUser } from "../models/userModel";
 import { compare, hash } from "bcryptjs";
+import { generateToken } from "../config/generateToken";
 
 export const userRegister = async (req: Request, res: Response) => {
   try {
@@ -42,7 +43,7 @@ export const userRegister = async (req: Request, res: Response) => {
     res.status(201).json({
       success: true,
       msg: "User registered",
-      user: {
+      data: {
         id: newUser._id,
         name,
         dob,
@@ -60,13 +61,14 @@ export const userRegister = async (req: Request, res: Response) => {
 export const userLogin = async (req: Request, res: Response) => {
   try {
     const { email, password }: { email: string; password: string } = req.body;
-    let user = await userModel.findOne({ email });
+    
+    let user = (await userModel.findOne({ email })) as IUser;
+    
     if (!user) {
       return res.status(400).json({
         success: false,
         mgs: "Email not found.  Please Register...",
       });
-      return;
     }
 
     const isPasswordValid = await compare(String(password), user.password);
@@ -76,82 +78,15 @@ export const userLogin = async (req: Request, res: Response) => {
         msg: "Incorrect password",
       });
     }
+
+    const token = generateToken(user._id);
     res.status(200).json({
       success: true,
       msg: "Login Successful",
-      user: {
-        id: user._id,
-        name: user.name,
-        dob: user.dob,
-        mobile: user.mobile,
-        email: user.email,
-      },
+      data: token,
     });
   } catch (err) {
     console.error("Login :", err);
     res.status(400).json("Something login error");
-  }
-};
-
-export const userUpdate = async (req: Request, res: Response) => {
-  try {
-    type reqType = {
-      name: string | null;
-      dob: string | null;
-      mobile: number | null;
-    };
-
-    const userId = req.params.id;
-    const payload = req.body as reqType;
-
-    const updateData: reqType = {
-      name: payload?.name ?? null,
-      dob: payload?.dob ?? null,
-      mobile: payload?.mobile ?? null,
-    };
-
-    const updateUser = await userModel.findByIdAndUpdate(
-      userId,
-      { $set: updateData },
-      { new: true }
-    );
-
-    if (!updateUser) {
-      return res.status(404).json({
-        success: false,
-        msg: "No record found",
-      });
-    }
-
-    res.status(200).json({
-      sucess: true,
-      msg: "User updated successfully",
-      user: updateData,
-    });
-  } catch (err) {
-    console.error("Update :", err);
-    res.status(500).json("Something went worng");
-  }
-};
-
-export const userDelete = async (req: Request, res: Response) => {
-  try {
-    const userId = req.params.id;
-    const deleteUser = await userModel.findByIdAndDelete(userId);
-    if (!deleteUser) {
-      return res.status(400).json({
-        success: false,
-        msg: "User not found",
-      });
-    }
-    res.status(200).json({
-      sucess: true,
-      msg: "User Id Delete successfuly",
-    });
-  } catch (err) {
-    res.status(500).json({
-      sucess: false,
-      msg: "Error is delete user api",
-    });
   }
 };
