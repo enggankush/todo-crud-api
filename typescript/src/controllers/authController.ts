@@ -63,11 +63,10 @@ export const userLogin = async (req: Request, res: Response) => {
     const { email, password }: { email: string; password: string } = req.body;
     
     let user = (await userModel.findOne({ email })) as IUser;
-    
     if (!user) {
       return res.status(400).json({
         success: false,
-        mgs: "Email not found.  Please Register...",
+        msg: "Email not found.  Please Register...",
       });
     }
 

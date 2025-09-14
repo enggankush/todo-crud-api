@@ -18,7 +18,7 @@ export const ValidateMiddleware = (validators: ValidationChain[]): RequestHandle
         success: false,
         errors: errors.array().map((err) => ({
           field: "path" in err ? err.path : "unknown",
-          message: err.msg,
+          msg: err.msg,
         })),
       });
       return;

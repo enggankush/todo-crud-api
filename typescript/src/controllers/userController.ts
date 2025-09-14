@@ -5,17 +5,17 @@ export const getUser = async (req: Request, res: Response) => {
   try {
     const userId = res.locals.id;
 
-    const user = await userModel.findById(userId);
+    const user = await userModel.findById(userId).select("-password").lean();
     if (!user) {
       return res.status(400).json({
         success: false,
         msg: "User not found",
       });
     }
-
+    const { password, __v, ...rest } = user;
     res.status(200).json({
-      sucess: true,
-      data: user,
+      success: true,
+      data: rest,
     });
   } catch (err) {
     console.error(err);
@@ -54,7 +54,7 @@ export const userUpdate = async (req: Request, res: Response) => {
     }
 
     res.status(200).json({
-      sucess: true,
+      success: true,
       msg: "User updated successfully",
       data: updateData,
     });
@@ -75,12 +75,12 @@ export const userDelete = async (req: Request, res: Response) => {
       });
     }
     res.status(200).json({
-      sucess: true,
+      success: true,
       msg: "User Id Delete successfuly",
     });
   } catch (err) {
     res.status(500).json({
-      sucess: false,
+      success: false,
       msg: "Error is delete user api",
     });
   }

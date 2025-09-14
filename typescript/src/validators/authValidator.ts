@@ -7,7 +7,7 @@ export const registerValidator = [
     .notEmpty()
     .withMessage("Date of Birth is Required")
     .bail()
-    .matches(/^(0[1-9]|[12][0-9]|3[01])[\/](0[1-9]|1[0-2])[\/](19|20)\d\d$/)
+    .matches(/^(0[1-9]|[12][0-9]|3[01])[/](0[1-9]|1[0-2])[/](19|20)\d\d$/)
     .withMessage("Invalid Date of Birth (format: dd/mm/yyyy)"),
 
   body("mobile")

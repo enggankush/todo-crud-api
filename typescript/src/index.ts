@@ -2,7 +2,8 @@ import { config } from "dotenv";
 import express, { json, Request, Response } from "express";
 import connectdb from "./config/db";
 import authRouter from "./routes/authRouter";
-import userRouter from "./routes/userRouter"
+import userRouter from "./routes/userRouter";
+import cors from "cors";
 
 config();
 
@@ -10,6 +11,9 @@ config();
 connectdb();
 
 const app = express();
+
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+
 
 // Middleware
 app.use(json());
